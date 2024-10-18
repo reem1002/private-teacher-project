@@ -1,11 +1,33 @@
-import React, { Component } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import React, {useState} from 'react';
+import { Container, Col, Form, Button } from 'react-bootstrap';
 import './MainHero.css'; // Import your custom styles
 import './MyNav.css';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setSearch } from '../teacherComponents/redux/slices/filterSlice';
 
 const MainHero = () => {
   const { t } = useTranslation(); // Use the translation hook
+  const navigate = useNavigate(); 
+  const dispatch = useDispatch();
+  const [selectedSubject, setSelectedSubject] = useState(''); // State to store selected subject
+  const [searchTerm, setSearchTerm] = useState(''); 
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Navigate to teacher page with the selected subject as a query parameter
+    if (selectedSubject) {
+      navigate(`/TeacherApp?subject=${selectedSubject}&search=${searchTerm}`);
+    }
+  };
+
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    dispatch(setSearch(value)); // Dispatch the search term to Redux
+  };
 
   return (
     <>
@@ -27,7 +49,7 @@ const MainHero = () => {
               </li>
             </ul>
             <Button href="/TeacherRegister" className="register-btn">
-              {t('registerTeacher')}
+            {t('registerTeacher')}
             </Button>
           </div>
 
@@ -47,7 +69,7 @@ const MainHero = () => {
             <h3>{t('welcome_message')}</h3>
           </div>
 
-          <Form className="row mx-auto">
+          <Form className="row mx-auto" onSubmit={handleSubmit}>
             {/* Input for search */}
             <Col md={6} className="form-group position-relative">
               <Form.Control
@@ -55,6 +77,8 @@ const MainHero = () => {
                 name="keywords"
                 placeholder={t('search_placeholder')}
                 className="form-control"
+                value={searchTerm}
+                onChange={handleSearchChange} 
               />
               <img src="./images/search.png" className="form-icon" alt="Search Icon" />
             </Col>
@@ -81,20 +105,21 @@ const MainHero = () => {
 
             {/* Subject Selection */}
             <div className="form-group d-flex align-items-center position-relative">
-              <Form.Select name="subjects[]" className="no-border" required>
-                <option value="">{t('Category')}</option>
-                <option value="26">{t('Biology')}</option>
-                <option value="8">{t('History')}</option>
-                <option value="7">{t('Geography')}</option>
-                <option value="6">{t('Math')}</option>
-                <option value="5">{t('Science')}</option>
-                <option value="28">{t('Philosophy')}</option>
-                <option value="24">{t('Physics')}</option>
-                <option value="25">{t('Chemistry')}</option>
-                <option value="3">{t('English')}</option>
-                <option value="23">{t('French')}</option>
-                <option value="2">{t('Arabic')}</option>
-                <option value="27">{t('Psychology')}</option>
+              <Form.Select name="subjects[]" className="no-border" required   onChange={(e) => setSelectedSubject(e.target.value)} // Set the selected subject
+          >
+                 <option value="">{t('Category')}</option>
+              <option value="Biology">{t('Biology')}</option>
+              <option value="History">{t('History')}</option>
+              <option value="Geography">{t('Geography')}</option>
+              <option value="Math">{t('Math')}</option>
+              <option value="Science">{t('Science')}</option>
+              <option value="Philosophy">{t('Philosophy')}</option>
+              <option value="Physics">{t('Physics')}</option>
+              <option value="Chemistry">{t('Chemistry')}</option>
+              <option value="English">{t('English')}</option>
+              <option value="French">{t('French')}</option>
+              <option value="Arabic">{t('Arabic')}</option>
+              <option value="Psychology">{t('Psychology')}</option>
               </Form.Select>
               <img src="./images/teacher_1.png" className="form-icon" alt="Subject Icon" />
             </div>
